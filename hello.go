@@ -109,17 +109,28 @@ func IsValidAPIKey(w http.ResponseWriter, r *http.Request, APIKey string) bool {
 	return true
 }
 
-// AreValidMovieDetails - This method checks if movie details passed in the request are valid
-func AreValidMovieDetails(w http.ResponseWriter, r *http.Request, movieid string, showid string, cinemaid string, date string) bool {
+// AreValidCinemaDetails - This method checks if movie details passed in the request are valid
+func AreValidCinemaDetails(w http.ResponseWriter, r *http.Request, movieid string, showid string, cinemaid string, date string) bool {
 
-	// result := GetMovieDetails(movieid)
-	// if string(result) == "None" {
-	// 	w.Write([]byte(fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid)))
-	// 	fmt.Printf("%s - Movieid not found\n", r.RequestURI)
-	// 	return false
-	// }
+	result, found := GetMovieDetails(movieid)
 
-	return true
+	if !found {
+		w.Write([]byte(fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid)))
+		fmt.Printf("%s - Movieid not found\n", r.RequestURI)
+		return false
+	}
+
+	//Iterate in movie shows list to find show_id
+	_result := result["shows"].([]map[string]interface{})
+	for k := range _result {
+		_item := _result[k]
+		fmt.Println("Show id : ", showid, " Mock show id : ", _item["show_id"])
+		if showid == _item["show_id"] {
+			return true
+		}
+	}
+
+	return false
 }
 
 // BookmeRest - View function for all bookme API requests
@@ -147,8 +158,10 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 		PlayMovies(w, r)
 	} else if params["play_movie_shows"] != nil {
 		PlayMovieShows(w, r)
+	} else if params["cinema_seatplan"] != nil {
+		CinemaSeatPlan(w, r)
 	} else {
-		fmt.Fprintf(w, "FAILED")
+		fmt.Fprintf(w, "Invalid query parameter")
 	}
 
 	// fmt.Printf("Got Data! r.PostFrom = %v\n", r.PostForm)
@@ -218,17 +231,13 @@ func PlayMovieShows(w http.ResponseWriter, r *http.Request) {
 // CinemaSeatPlan - function for bookme /play_movie_shows
 func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 
-	apikey := r.FormValue("api_key")
-	if !IsValidAPIKey(w, r, apikey) {
-		return
-	}
-
 	movieid := r.FormValue("movie_id")
-	showid := r.FormValue("movie_id")
+	showid := r.FormValue("show_id")
 	cinemaid := r.FormValue("cinema_id")
 	date := r.FormValue("date")
 
-	if !AreValidMovieDetails(w, r, movieid, showid, cinemaid, date) {
+	if AreValidCinemaDetails(w, r, movieid, showid, cinemaid, date) {
+		fmt.Fprintln(w, "Show found")
 		return
 	}
 
@@ -241,7 +250,6 @@ func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// Send an empty response as sent by Bookme API (if movie id isn't found)
-	w.WriteHeader(200)
 	w.Write([]byte("[[]]"))
 	fmt.Println(r.RequestURI, "- Error, Invalid Movie ID!")
 	return
