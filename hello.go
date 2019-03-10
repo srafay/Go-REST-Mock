@@ -237,7 +237,19 @@ func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 	date := r.FormValue("date")
 
 	if AreValidCinemaDetails(w, r, movieid, showid, cinemaid, date) {
-		fmt.Fprintln(w, "Show found")
+		for k := range CinemaSeatPlanMock {
+			if CinemaSeatPlanMock[k]["show_id"] == showid {
+				js, err := json.Marshal(CinemaSeatPlanMock[k])
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(js)
+				return
+			}
+		}
+		w.Write([]byte(fmt.Sprintf("No seatplan found for show_id: %s", showid)))
 		return
 	}
 
@@ -251,6 +263,6 @@ func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 
 	// Send an empty response as sent by Bookme API (if movie id isn't found)
 	w.Write([]byte("[[]]"))
-	fmt.Println(r.RequestURI, "- Error, Invalid Movie ID!")
+	fmt.Println(r.RequestURI, "- Error, Invalid Show ID or Movie ID")
 	return
 }
