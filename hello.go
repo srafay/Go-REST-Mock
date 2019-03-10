@@ -11,9 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// playMovies - Map for returning in Bookme play_movies request
-type playMovies map[string]string
-
 // show - struct for the show field
 type show struct {
 	CityID           string `json:city_id`
@@ -62,150 +59,20 @@ type playMovieShows struct {
 	Shows         []show `json:shows`
 }
 
-var playMoviesList []playMovies
 var playMovieShowsList []playMovieShows
-
-type Person struct {
-	ID        string   `json:"id,omitempty"`
-	Firstname string   `json:"firstname,omitempty"`
-	Lastname  string   `json:"lastname,omitempty"`
-	Address   *Address `json:"address,omitempty"`
-}
-type Address struct {
-	City  string `json:"city,omitempty"`
-	State string `json:"state,omitempty"`
-}
-
-var people []Person
 
 // our main function
 func main() {
-	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
-	people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
-	people = append(people, Person{ID: "3", Firstname: "Francis", Lastname: "Sunday"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "934",
-		"imdb_id":      "tt4154664",
-		"title":        "Captain Marvel",
-		"genre":        "Action, Adventure",
-		"language":     "English",
-		"director":     "Anna Boden, Ryan Fleck",
-		"producer":     "Victoria Alonso",
-		"release_date": "2019-03-08",
-		"cast":         "Brie Larson",
-		"ranking":      "6.0",
-		"length":       "124",
-		"thumbnail":    "https://bookme.pk/custom/upload/marvil_IMDB.jpg"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "901",
-		"imdb_id":      "",
-		"title":        "3 BAHADUR",
-		"genre":        "Adventure,  Animation, Family",
-		"language":     "Urdu",
-		"director":     "Sharmeen Obaid Chinoy",
-		"producer":     "Waadi Animations",
-		"release_date": "2018-12-14",
-		"cast":         " Mehwish HayatFahad MustafaSarwat GillaniNimra BuchaBehroze Sabzwari",
-		"ranking":      "0.9",
-		"length":       "120",
-		"thumbnail":    "https://bookme.pk/custom/upload/3_Bahadur_RiseWarriors_IMDB.jpeg"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "898",
-		"imdb_id":      "tt1477834",
-		"title":        "AQUAMAN",
-		"genre":        "Action, Adventure, Fantasy",
-		"language":     "English",
-		"director":     "James Wan",
-		"producer":     "Peter Safran",
-		"release_date": "2018-12-21",
-		"cast":         "Jason Momoa, Amber Heard, Nicole Kidman",
-		"ranking":      "7.5",
-		"length":       "143",
-		"thumbnail":    "https://bookme.pk/custom/upload/Aquaman_IMDB.jpg"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "881",
-		"imdb_id":      "tt1727824",
-		"title":        "Bohemian Rhapsody",
-		"genre":        "Drama, Biography  , Music",
-		"language":     "English",
-		"director":     "Bryan Singer",
-		"producer":     "",
-		"release_date": "2018-11-02",
-		"cast":         "Rami Malek, Lucy Boynton, Gwilym Lee",
-		"ranking":      "8.1",
-		"length":       "134",
-		"thumbnail":    "https://bookme.pk/custom/upload/Bohemian IMDB.jpg"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "855",
-		"imdb_id":      "",
-		"title":        "THE DONKEY KING",
-		"genre":        " Animation",
-		"language":     "Urdu",
-		"director":     "Aziz Jindani",
-		"producer":     "Talisman Studios",
-		"release_date": "2018-10-13",
-		"cast":         "Jan Rambo, Ismail Tara, Hina Dilpazeer, Ghulam Mohiuddin, Jawed Sheikh",
-		"ranking":      "7.2",
-		"length":       "120",
-		"thumbnail":    "https://bookme.pk/custom/upload/TDK_IMDB.jpg"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "835",
-		"imdb_id":      "tt8032912",
-		"title":        "PARWAAZ HAI JUNOON",
-		"genre":        "Action, Romance, War",
-		"language":     "Urdu",
-		"director":     "Haseeb Hasan",
-		"producer":     "Momina Duraid",
-		"release_date": "2018-08-22",
-		"cast":         "Hamza Ali Abbasi, Hania Aamir, Ahad Raza Mir, Shaz Khan, Kubra Khan and others",
-		"ranking":      "8.5",
-		"length":       "130",
-		"thumbnail":    "https://bookme.pk/custom/upload/parwaz_IMDB.jpg"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "829",
-		"imdb_id":      "tt7816386",
-		"title":        "JAWANI PHIR NAHI ANI 2",
-		"genre":        "Comedy",
-		"language":     "Urdu",
-		"director":     "Nadeem Beyg",
-		"producer":     "Salman Iqbal,Humayun Saeed,Shahzad NasibJarjees Seja",
-		"release_date": "2018-08-21",
-		"cast":         "Mawra Hocane,Kanwaljit Singh,Humayun Saeed",
-		"ranking":      "8.0",
-		"length":       "165",
-		"thumbnail":    "https://bookme.pk/custom/upload/JPNA2_IMDB.jpg"})
-
-	playMoviesList = append(playMoviesList, map[string]string{
-		"movie_id":     "824",
-		"imdb_id":      "tt4912910",
-		"title":        "Mission Impossible Fallout",
-		"genre":        "Action, Thriller, Adventure",
-		"language":     "English",
-		"director":     "Christopher McQuarrie",
-		"producer":     "Tom Cruise",
-		"release_date": "2018-07-27",
-		"cast":         "Tom Cruise,Rebecca Ferguson,Henry Cavill",
-		"ranking":      "7.8",
-		"length":       "227",
-		"thumbnail":    "https://bookme.pk/custom/upload/mif_IMDB.jpg"})
-
 	router := mux.NewRouter()
-	router.HandleFunc("/people", GetPeople).Methods("GET")
 	router.HandleFunc("/bookme/rest_api", HeadersAuthorization(BookmeRest, config.BookmeAPIKey, config.BookmeAuthorization))
+	fmt.Println("Server started, listening at port 8000")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
 // ValidRequestMethod - This method checks if request method is allowed or not
 func ValidRequestMethod(w http.ResponseWriter, r *http.Request, method string) bool {
 
-	if r.Method != "POST" {
+	if r.Method != method {
 		w.WriteHeader(405)
 		w.Write([]byte("405 - Method not allowed"))
 		fmt.Printf("%s - Forbidden, method not allowed!\n", r.RequestURI)
@@ -230,11 +97,6 @@ func HeadersAuthorization(handler http.HandlerFunc, bookmeAPIKey, bookmeAuthoriz
 
 		handler(w, r)
 	}
-}
-
-// GetPeople - Temporary function
-func GetPeople(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(people)
 }
 
 // IsValidAPIKey - Checks if valid API key was passed in form-data
@@ -272,6 +134,12 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(0); err != nil {
 		fmt.Fprintf(w, "\nThere was an error in parsing the form data\n")
 		fmt.Fprintf(w, "Error: %v\n", err)
+		return
+	}
+
+	// Check if valid api_key is passed in the form-data
+	apikey := r.FormValue("api_key")
+	if !IsValidAPIKey(w, r, apikey) {
 		return
 	}
 
@@ -317,11 +185,6 @@ func GetMovieDetails(movieid string) []byte {
 // PlayMovies - function for bookme /play_movies
 func PlayMovies(w http.ResponseWriter, r *http.Request) {
 
-	apikey := r.FormValue("api_key")
-	if !IsValidAPIKey(w, r, apikey) {
-		return
-	}
-
 	js, err := json.Marshal(playMoviesList)
 
 	if err != nil {
@@ -332,6 +195,7 @@ func PlayMovies(w http.ResponseWriter, r *http.Request) {
 	// Return json response
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+	return
 }
 
 // PlayMovieShows - function for bookme /play_movie_shows
