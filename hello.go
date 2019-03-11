@@ -13,52 +13,52 @@ import (
 )
 
 // show - struct for the show field
-type show struct {
-	CityID           string `json:city_id`
-	CityName         string `json:city_name`
-	ShowID           string `json:show_id`
-	ShowMovieID      string `json:show_movie_id`
-	ShowCinemaID     string `json:show_cenima_id`
-	CinemaName       string `json:cinema_name`
-	HallID           string `json:hall_id`
-	HallName         string `json:hall_name`
-	ShowDate         string `json:show_date`
-	ShowStartTime    string `json:show_start_time`
-	ShowTime         string `json:show_time`
-	TicketPrice      string `json:ticket_price`
-	HandlingCharges  int    `json:handling_charges`
-	EasyPaisaCharges int    `json:easypaisa_charges`
-	HouseFull        string `json:house_full`
-	ETicket          string `json:eticket`
-}
+// type show struct {
+// 	CityID           string `json:city_id`
+// 	CityName         string `json:city_name`
+// 	ShowID           string `json:show_id`
+// 	ShowMovieID      string `json:show_movie_id`
+// 	ShowCinemaID     string `json:show_cenima_id`
+// 	CinemaName       string `json:cinema_name`
+// 	HallID           string `json:hall_id`
+// 	HallName         string `json:hall_name`
+// 	ShowDate         string `json:show_date`
+// 	ShowStartTime    string `json:show_start_time`
+// 	ShowTime         string `json:show_time`
+// 	TicketPrice      string `json:ticket_price`
+// 	HandlingCharges  int    `json:handling_charges`
+// 	EasyPaisaCharges int    `json:easypaisa_charges`
+// 	HouseFull        string `json:house_full`
+// 	ETicket          string `json:eticket`
+// }
 
-// playMovieShows - Struct for returning in Bookme play_movie_shows request
-type playMovieShows struct {
-	MovieID       string `json:movie_id`
-	IMDBID        string `json:imdb_id`
-	Title         string `json:title`
-	Genre         string `json:genre`
-	Language      string `json:language`
-	Director      string `json:director`
-	Producer      string `json:producer`
-	ReleaseDate   string `json:release_date`
-	Cast          string `json:cast`
-	Ranking       string `json:ranking`
-	Length        string `json:length`
-	Thumbnail     string `json:thumbnail`
-	MusicDirector string `json:music_director`
-	Country       string `json:country`
-	Synopsis      string `json:synopsis`
-	Details       string `json:details`
-	TrailerLink   string `json:trailer_link`
-	Date          string `json:date`
-	BookingType   string `json:booking_type`
-	Points        string `json:points`
-	UpdateDate    string `json:update_date`
-	CloseDate     string `json:close_date`
-	Status        string `json:status`
-	Shows         []show `json:shows`
-}
+// // playMovieShows - Struct for returning in Bookme play_movie_shows request
+// type playMovieShows struct {
+// 	MovieID       string `json:movie_id`
+// 	IMDBID        string `json:imdb_id`
+// 	Title         string `json:title`
+// 	Genre         string `json:genre`
+// 	Language      string `json:language`
+// 	Director      string `json:director`
+// 	Producer      string `json:producer`
+// 	ReleaseDate   string `json:release_date`
+// 	Cast          string `json:cast`
+// 	Ranking       string `json:ranking`
+// 	Length        string `json:length`
+// 	Thumbnail     string `json:thumbnail`
+// 	MusicDirector string `json:music_director`
+// 	Country       string `json:country`
+// 	Synopsis      string `json:synopsis`
+// 	Details       string `json:details`
+// 	TrailerLink   string `json:trailer_link`
+// 	Date          string `json:date`
+// 	BookingType   string `json:booking_type`
+// 	Points        string `json:points`
+// 	UpdateDate    string `json:update_date`
+// 	CloseDate     string `json:close_date`
+// 	Status        string `json:status`
+// 	Shows         []show `json:shows`
+// }
 
 // our main function
 func main() {
@@ -72,6 +72,7 @@ func main() {
 func WriteJSONResponse(w http.ResponseWriter, response string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(response))
+	return
 }
 
 // ValidRequestMethod - This method checks if request method is allowed or not
@@ -284,7 +285,7 @@ func SeatAvailable(seatPlanIndex int, seatID string) bool {
 	return false
 }
 
-// CheckIfSeatsAvailable - helper function to check all seats availability
+// CheckIfSeatsAvailable - helper function to check if all seats are available before we can mark them booked
 func CheckIfSeatsAvailable(seatPlanIndex int, seatNumbers []string) bool {
 
 	// Check if seats user want to book are not reserved
@@ -329,6 +330,21 @@ func ReserveCinemaSeats(seatPlanIndex int, seatNumbers string) bool {
 	return true
 }
 
+// MarkSeatsBooked - function for marking seats status as booked
+func MarkSeatsBooked(seatPlanIndex int, seatNumbers string) {
+
+	splittedSeatNumbers := strings.Split(strings.Replace(seatNumbers, " ", "", -1), ",")
+
+	// Change the status of the seats provided here to booked
+	for _, seat := range splittedSeatNumbers {
+		CinemaSeatPlanMock[seatPlanIndex]["booked_seats"] = append(CinemaSeatPlanMock[seatPlanIndex]["booked_seats"].([]string), seat)
+	}
+
+	fmt.Println(config.INFO, seatNumbers, "have been marked as reserved")
+	fmt.Println(config.DEBUG, "Reserved seats are: ", CinemaSeatPlanMock[seatPlanIndex]["booked_seats"])
+	return
+}
+
 // CinemaReserveSeats - function for bookme /cinema_reserve_seats
 func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
 
@@ -344,13 +360,17 @@ func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
 	if AreValidCinemaDetails(w, r, movieid, showid, cinemaid, showDate) {
 		for k := range CinemaSeatPlanMock {
 			if CinemaSeatPlanMock[k]["show_id"] == showid {
-				reserved := ReserveCinemaSeats(k, seatNumbers)
-				if !reserved {
+				seatsReserved := ReserveCinemaSeats(k, seatNumbers)
+				if !seatsReserved {
 					WriteJSONResponse(w, `[{"status":"failed", "msg":"Seats are aready allocated."}]`)
 				} else {
 					WriteJSONResponse(w, fmt.Sprintf(`[{"status":"success", "msg":"Seats are allocated successfully.", "booking_no":"%d"}]`, config.BookingNumber))
+
 					// increment the BookingNumber variable
 					config.BookingNumber++
+
+					// change status of reserved seats to booked
+					MarkSeatsBooked(k, seatNumbers)
 				}
 				return
 			}
@@ -358,5 +378,4 @@ func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
 		WriteJSONResponse(w, fmt.Sprintf("No seatplan found for show_id: %s", showid))
 		return
 	}
-
 }

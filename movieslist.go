@@ -3581,7 +3581,7 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0}}}},
-		"booked_seats": []map[string]interface{}{}}}
+		"booked_seats": []string{}}}
 
 // playMoviesList = append(playMoviesList, map[string]string{
 // 	"movie_id":     "934",
