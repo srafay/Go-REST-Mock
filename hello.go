@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	config "config"
 
@@ -63,8 +64,14 @@ type playMovieShows struct {
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/bookme/rest_api", HeadersAuthorization(BookmeRest, config.BookmeAPIKey, config.BookmeAuthorization))
-	fmt.Println("Server started, listening at port 8000")
+	fmt.Println(config.INFO, "Server started, listening at port 8000")
 	log.Fatal(http.ListenAndServe(":8000", router))
+}
+
+// WriteJSONResponse - helper function for writing JSON response to Response Writer
+func WriteJSONResponse(w http.ResponseWriter, response string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(response))
 }
 
 // ValidRequestMethod - This method checks if request method is allowed or not
@@ -84,28 +91,30 @@ func HeadersAuthorization(handler http.HandlerFunc, bookmeAPIKey, bookmeAuthoriz
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		fmt.Println("=================================================================")
+
 		var apikey = r.Header.Get("API_KEY")
 		var authorization = r.Header.Get("Authorization")
 
 		if apikey != bookmeAPIKey || authorization != bookmeAuthorization {
 			w.WriteHeader(401)
-			w.Write([]byte("Unauthorised.\nInvalid Headers provided (API_KEY, Authorization)"))
+			WriteJSONResponse(w, "Unauthorised.\nInvalid Headers provided (API_KEY, Authorization)")
 			return
 		}
 
 		handler(w, r)
+		fmt.Println("=================================================================")
 	}
 }
 
 // IsValidAPIKey - Checks if valid API key was passed in form-data
 func IsValidAPIKey(w http.ResponseWriter, r *http.Request, APIKey string) bool {
 	if APIKey != config.BookmeAPIKey {
-		w.WriteHeader(200)
-		w.Write([]byte("{\"status\":false,\"error\":\"Invalid API Key.\"}"))
-		fmt.Println(r.RequestURI, "- Error, Invalid API key!")
+		WriteJSONResponse(w, "{\"status\":false,\"error\":\"Invalid API Key.\"}")
+		fmt.Println(config.ERROR, r.RequestURI, "Invalid API key!")
 		return false
 	}
-	fmt.Println(r.RequestURI, "- 'api_key' validated!")
+	fmt.Println(config.INFO, r.RequestURI, "'api_key' validated!")
 	return true
 }
 
@@ -115,8 +124,8 @@ func AreValidCinemaDetails(w http.ResponseWriter, r *http.Request, movieid strin
 	result, found := GetMovieDetails(movieid)
 
 	if !found {
-		w.Write([]byte(fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid)))
-		fmt.Printf("%s - Movieid not found\n", r.RequestURI)
+		WriteJSONResponse(w, fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid))
+		fmt.Println(config.DEBUG, r.RequestURI, "Movieid not found")
 		return false
 	}
 
@@ -124,7 +133,7 @@ func AreValidCinemaDetails(w http.ResponseWriter, r *http.Request, movieid strin
 	_result := result["shows"].([]map[string]interface{})
 	for k := range _result {
 		_item := _result[k]
-		fmt.Println("Show id : ", showid, " Mock show id : ", _item["show_id"])
+		fmt.Println(config.DEBUG, "Show id : ", showid, " Mock show id : ", _item["show_id"])
 		if showid == _item["show_id"] {
 			return true
 		}
@@ -160,8 +169,10 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 		PlayMovieShows(w, r)
 	} else if params["cinema_seatplan"] != nil {
 		CinemaSeatPlan(w, r)
+	} else if params["cinema_reserve_seats"] != nil {
+		CinemaReserveSeats(w, r)
 	} else {
-		fmt.Fprintf(w, "Invalid query parameter")
+		fmt.Fprintf(w, "Invalid query parameter (endpoint)")
 	}
 
 	// fmt.Printf("Got Data! r.PostFrom = %v\n", r.PostForm)
@@ -189,18 +200,12 @@ func PlayMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Return json response
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	WriteJSONResponse(w, string(js))
 	return
 }
 
 // PlayMovieShows - function for bookme /play_movie_shows
 func PlayMovieShows(w http.ResponseWriter, r *http.Request) {
-
-	apikey := r.FormValue("api_key")
-	if !IsValidAPIKey(w, r, apikey) {
-		return
-	}
 
 	movieid := r.FormValue("movie_id")
 
@@ -216,15 +221,13 @@ func PlayMovieShows(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(_response)
+		WriteJSONResponse(w, string(_response))
 		return
 	}
 
 	// Send an empty response as sent by Bookme API (if movie id isn't found)
-	w.WriteHeader(200)
-	w.Write([]byte("[[]]"))
-	fmt.Println(r.RequestURI, "- [Warning], Invalid Movie ID!")
+	WriteJSONResponse(w, "[[]]")
+	fmt.Println(config.WARNING, r.RequestURI, "Invalid Movie ID", movieid)
 	return
 }
 
@@ -244,8 +247,7 @@ func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-				w.Header().Set("Content-Type", "application/json")
-				w.Write(js)
+				WriteJSONResponse(w, string(js))
 				return
 			}
 		}
@@ -253,16 +255,108 @@ func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if string(response) != "None" {
-
-	// 	// Return json response
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	w.Write(response)
-	// 	return
-	// }
-
 	// Send an empty response as sent by Bookme API (if movie id isn't found)
-	w.Write([]byte("[[]]"))
-	fmt.Println(r.RequestURI, "- Error, Invalid Show ID or Movie ID")
+	WriteJSONResponse(w, "[[]]")
+	fmt.Println(config.ERROR, r.RequestURI, "Invalid Show ID or Movie ID")
 	return
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if a == b {
+			return true
+		}
+	}
+	return false
+}
+
+// SeatAvailable - helper function to check seat availability
+func SeatAvailable(seatPlanIndex int, seatID string) bool {
+
+	for _, seatPlan := range CinemaSeatPlanMock[seatPlanIndex]["seat_plan"].([]map[string]interface{}) {
+		SeatsIterable := seatPlan["seats"].([]map[string]interface{})
+		for _, seatDict := range SeatsIterable {
+			if seatDict["seat_id"] == seatID {
+				return seatDict["status"] == 0
+			}
+		}
+	}
+	return false
+}
+
+// CheckIfSeatsAvailable - helper function to check all seats availability
+func CheckIfSeatsAvailable(seatPlanIndex int, seatNumbers []string) bool {
+
+	// Check if seats user want to book are not reserved
+	for _, seatNumber := range seatNumbers {
+		if !SeatAvailable(seatPlanIndex, seatNumber) {
+			fmt.Println(config.WARNING, "seat number", seatNumber, "is already booked")
+			return false
+		}
+	}
+	return true
+}
+
+// ReserveCinemaSeats - helper function for reserving cinema seats
+func ReserveCinemaSeats(seatPlanIndex int, seatNumbers string) bool {
+
+	// Strip whitespaces from the string and then split coma separated seat numbers
+	splittedSeatNumbers := strings.Split(strings.Replace(seatNumbers, " ", "", -1), ",")
+	fmt.Println(config.DEBUG, "splittedseatnum:", splittedSeatNumbers)
+
+	seatPlanMap := CinemaSeatPlanMock[seatPlanIndex]
+	seatPlanMapIterable := seatPlanMap["seat_plan"].([]map[string]interface{})
+
+	// Check if all the seats user requested for booking are available
+	if !CheckIfSeatsAvailable(seatPlanIndex, splittedSeatNumbers) {
+		fmt.Println(config.WARNING, "seats are already reserved (ref1)")
+		return false
+	}
+
+	for _, seatPlan := range seatPlanMapIterable {
+		SeatsIterable := seatPlan["seats"].([]map[string]interface{})
+		for _, seatDict := range SeatsIterable {
+			if stringInSlice(seatDict["seat_id"].(string), splittedSeatNumbers) {
+				if seatDict["status"] == 0 {
+					seatDict["status"] = 1
+					fmt.Println(config.INFO, "reserved seat:", seatDict["seat_id"])
+				} else {
+					fmt.Println(config.WARNING, "seat number:", seatDict["seat_id"], "already reserved [WHY]")
+				}
+			}
+		}
+	}
+	return true
+}
+
+// CinemaReserveSeats - function for bookme /cinema_reserve_seats
+func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
+
+	showid := r.FormValue("show_id")
+	movieid := r.FormValue("movie_id")
+	cinemaid := r.FormValue("cinema_id")
+	showDate := r.FormValue("show_date")
+	// showTime := r.FormValue("show_time")
+	seatNumbers := r.FormValue("seat_numbers")
+	// seats := r.FormValue("seats")
+	// ticketPrice := r.FormValue("ticket_price")
+
+	if AreValidCinemaDetails(w, r, movieid, showid, cinemaid, showDate) {
+		for k := range CinemaSeatPlanMock {
+			if CinemaSeatPlanMock[k]["show_id"] == showid {
+				reserved := ReserveCinemaSeats(k, seatNumbers)
+				if !reserved {
+					WriteJSONResponse(w, `[{"status":"failed", "msg":"Seats are aready allocated."}]`)
+				} else {
+					WriteJSONResponse(w, fmt.Sprintf(`[{"status":"success", "msg":"Seats are allocated successfully.", "booking_no":"%d"}]`, config.BookingNumber))
+					// increment the BookingNumber variable
+					config.BookingNumber++
+				}
+				return
+			}
+		}
+		WriteJSONResponse(w, fmt.Sprintf("No seatplan found for show_id: %s", showid))
+		return
+	}
+
 }
