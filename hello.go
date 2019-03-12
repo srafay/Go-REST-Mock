@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	config "config"
 
@@ -104,7 +107,6 @@ func HeadersAuthorization(handler http.HandlerFunc, bookmeAPIKey, bookmeAuthoriz
 		}
 
 		handler(w, r)
-		fmt.Println("=================================================================")
 	}
 }
 
@@ -134,7 +136,7 @@ func AreValidCinemaDetails(w http.ResponseWriter, r *http.Request, movieid strin
 	_result := result["shows"].([]map[string]interface{})
 	for k := range _result {
 		_item := _result[k]
-		fmt.Println(config.DEBUG, "Show id : ", showid, " Mock show id : ", _item["show_id"])
+		// fmt.Println(config.DEBUG, "Show id : ", showid, " Mock show id : ", _item["show_id"])
 		if showid == _item["show_id"] {
 			return true
 		}
@@ -172,6 +174,8 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 		CinemaSeatPlan(w, r)
 	} else if params["cinema_reserve_seats"] != nil {
 		CinemaReserveSeats(w, r)
+	} else if params["save_cinema"] != nil {
+		SaveCinema(w, r)
 	} else {
 		fmt.Fprintf(w, "Invalid query parameter (endpoint)")
 	}
@@ -190,7 +194,7 @@ func GetMovieDetails(movieid string) (map[string]interface{}, bool) {
 	return nil, false
 }
 
-// PlayMovies - function for bookme /play_movies
+// PlayMovies - function for bookme /play_movies API
 func PlayMovies(w http.ResponseWriter, r *http.Request) {
 
 	js, err := json.Marshal(playMoviesList)
@@ -205,7 +209,7 @@ func PlayMovies(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// PlayMovieShows - function for bookme /play_movie_shows
+// PlayMovieShows - function for bookme /play_movie_shows API
 func PlayMovieShows(w http.ResponseWriter, r *http.Request) {
 
 	movieid := r.FormValue("movie_id")
@@ -345,7 +349,7 @@ func MarkSeatsBooked(seatPlanIndex int, seatNumbers string) {
 	return
 }
 
-// CinemaReserveSeats - function for bookme /cinema_reserve_seats
+// CinemaReserveSeats - function for bookme /cinema_reserve_seats API
 func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
 
 	showid := r.FormValue("show_id")
@@ -378,4 +382,112 @@ func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
 		WriteJSONResponse(w, fmt.Sprintf("No seatplan found for show_id: %s", showid))
 		return
 	}
+}
+
+// randomSeq - helper function for generating random sequence
+func randomSeq(n int) string {
+
+	rand.Seed(time.Now().UnixNano())
+	var letters = []rune("abcde0123456789")
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
+}
+
+// SaveCinemaResponse - helper function for formatting the response to be sent in /save_cinema API
+func SaveCinemaResponse(cinema, screen, movie, seats, ticketPrice, name, phone, email, city, address, seatNumbers, Time string, handlingCharges int) (string, bool) {
+	status := "success"
+	msg := ""
+	bookingID := fmt.Sprintf("AC%d", config.BookingNumber*100000)
+	orderRefNumber := fmt.Sprintf("AC%d", config.BookingNumber*100000)
+	order := fmt.Sprintf("mov%d", config.BookingNumber*100)
+	bookmeBookingID := randomSeq(32)
+	bookingReference := ""
+	netAmount := 0
+	discount := 0
+	if _ticketPrice, err := strconv.ParseInt(ticketPrice, 10, 0); err == nil {
+		netAmount = int(_ticketPrice)
+	} else {
+		fmt.Println(config.ERROR, "There was an error converting 'ticket_price' to integer")
+	}
+	if _seats, err := strconv.ParseInt(seats, 10, 0); err == nil {
+		netAmount *= int(_seats)
+	} else {
+		fmt.Println(config.ERROR, "There was an error converting 'seats' to integer")
+	}
+
+	totalAmount := netAmount + handlingCharges
+	seatPreference := ""
+	date := time.Now().Format("02th January 2006 03:04:05 PM")
+	_time, _ := time.Parse("2006-01-02 15:04:05", Time)
+
+	return fmt.Sprintf(`[
+		{
+			"status": "%s",
+			"msg": "%s",
+			"booking_id": "%s",
+			"orderRefNumber": "%s",
+			"order": "%s",
+			"bookme_booking_id": "%s",
+			"booking_reference": "%s",
+			"cinema": "%s",
+			"screen": "%s",
+			"movie": "%s",
+			"seats": "%s",
+			"net_amount": "%d",
+			"handling_charges": "%d",
+			"Discount": "%d",
+			"total_amount": "%d",
+			"name": "%s",
+			"phone": "%s",
+			"email": "%s",
+			"city": "%s",
+			"address": "%s",
+			"seat_numbers": "%s",
+			"seat_preference": "%s",
+			"date": "%s",
+			"time": "%s"
+		}
+	]`,
+		status, msg, bookingID, orderRefNumber, order, bookmeBookingID, bookingReference, cinema, screen, movie, seats, netAmount,
+		handlingCharges, discount, totalAmount, name, phone, email, city, address, seatNumbers, seatPreference, date, _time.Format("Jan 02 2006 03:04 PM")), true
+
+}
+
+// SaveCinema - function for bookme /save_cinema API
+func SaveCinema(w http.ResponseWriter, r *http.Request) {
+
+	// bookingNumber := r.FormValue("booking_no")
+	showID := r.FormValue("show_id")
+	// bookingType := r.FormValue("booking_type")
+	seats := r.FormValue("seats")
+	seatNumbers := r.FormValue("seat_numbers")
+	// amount := r.FormValue("amount")
+	name := r.FormValue("name")
+	email := r.FormValue("email")
+	phone := r.FormValue("phone")
+	city := r.FormValue("city")
+	address := r.FormValue("address")
+	// paymentType := r.FormValue("payment_type")
+
+	response := ""
+	success := false
+
+	for _, movie := range playMovieShowsList {
+		for _, show := range movie["shows"].([]map[string]interface{}) {
+			if showID == show["show_id"] {
+				response, success = SaveCinemaResponse(show["cinema_name"].(string), show["hall_name"].(string), movie["title"].(string), seats, show["ticket_price"].(string), name, phone, email, city, address, seatNumbers, show["show_start_time"].(string), show["handling_charges"].(int))
+			}
+		}
+	}
+
+	if success {
+		WriteJSONResponse(w, response)
+	} else {
+		WriteJSONResponse(w, `[{"status":"failed", "msg":"Invalid parameters"}]`)
+	}
+	return
+
 }
