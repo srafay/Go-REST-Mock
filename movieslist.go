@@ -1,7 +1,5 @@
 package main
 
-// var playMoviesList []map[string]interface{}
-
 var playMoviesList = []map[string]interface{}{
 	{
 		"movie_id":     "934",
