@@ -33,7 +33,7 @@ func ValidRequestMethod(w http.ResponseWriter, r *http.Request, method string) b
 	if r.Method != method {
 		w.WriteHeader(405)
 		w.Write([]byte("405 - Method not allowed"))
-		fmt.Printf("%s - Forbidden, method not allowed!\n", r.RequestURI)
+		fmt.Println(config.ERROR, r.RequestURI, "Forbidden, method not allowed!")
 		return false
 	}
 	return true
@@ -70,30 +70,6 @@ func IsValidAPIKey(w http.ResponseWriter, r *http.Request, APIKey string) bool {
 	return true
 }
 
-// AreValidCinemaDetails - This method checks if movie details passed in the request are valid
-func AreValidCinemaDetails(w http.ResponseWriter, r *http.Request, movieid string, showid string, cinemaid string, date string) bool {
-
-	result, found := GetMovieDetails(movieid)
-
-	if !found {
-		WriteJSONResponse(w, fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid))
-		fmt.Println(config.DEBUG, r.RequestURI, "Movieid not found")
-		return false
-	}
-
-	//Iterate in movie shows list to find show_id
-	_result := result["shows"].([]map[string]interface{})
-	for k := range _result {
-		_item := _result[k]
-		// fmt.Println(config.DEBUG, "Show id : ", showid, " Mock show id : ", _item["show_id"])
-		if showid == _item["show_id"] {
-			return true
-		}
-	}
-
-	return false
-}
-
 // BookmeRest - View function for all bookme API requests
 func BookmeRest(w http.ResponseWriter, r *http.Request) {
 
@@ -128,8 +104,6 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "Invalid query parameter (endpoint)")
 	}
-
-	// fmt.Printf("Got Data! r.PostFrom = %v\n", r.PostForm)
 }
 
 // stringInSlice - helper function which provides 'in' functionality as in python

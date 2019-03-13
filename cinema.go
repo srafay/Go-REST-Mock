@@ -21,6 +21,30 @@ func GetMovieDetails(movieid string) (map[string]interface{}, bool) {
 	return nil, false
 }
 
+// AreValidCinemaDetails - This method checks if movie details passed in the request are valid
+func AreValidCinemaDetails(w http.ResponseWriter, r *http.Request, movieid string, showid string, cinemaid string, date string) bool {
+
+	result, found := GetMovieDetails(movieid)
+
+	if !found {
+		WriteJSONResponse(w, fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid))
+		fmt.Println(config.DEBUG, r.RequestURI, "Movieid not found")
+		return false
+	}
+
+	//Iterate in movie shows list to find show_id
+	_result := result["shows"].([]map[string]interface{})
+	for k := range _result {
+		_item := _result[k]
+		// fmt.Println(config.DEBUG, "Show id : ", showid, " Mock show id : ", _item["show_id"])
+		if showid == _item["show_id"] {
+			return true
+		}
+	}
+
+	return false
+}
+
 // PlayMovies - function for bookme /play_movies API
 func PlayMovies(w http.ResponseWriter, r *http.Request) {
 
@@ -120,6 +144,59 @@ func CheckIfSeatsAvailable(seatPlanIndex int, seatNumbers []string) bool {
 	return true
 }
 
+// ChangeSeatStatus - helper function which changes the status of the seat of a particular show
+func ChangeSeatStatus(showID, seatID string, status int) {
+	for i, showDict := range CinemaSeatPlanMock {
+		if showID == showDict["show_id"] {
+			// check if we are removing the seat from being reserved
+			if status == 0 {
+				for j, seat := range CinemaSeatPlanMock[i]["booked_seats"].([]string) {
+					if seatID == seat {
+						// Remove the seat at index j from booked_seats
+						CinemaSeatPlanMock[i]["booked_seats"].([]string)[j] = CinemaSeatPlanMock[i]["booked_seats"].([]string)[len(CinemaSeatPlanMock[i]["booked_seats"].([]string))-1] // Copy last element to index j.
+						CinemaSeatPlanMock[i]["booked_seats"].([]string)[len(CinemaSeatPlanMock[i]["booked_seats"].([]string))-1] = ""                                                  // Erase last element (write zero value).
+						CinemaSeatPlanMock[i]["booked_seats"] = CinemaSeatPlanMock[i]["booked_seats"].([]string)[:len(CinemaSeatPlanMock[i]["booked_seats"].([]string))-1]              // Truncate slice.
+
+						fmt.Println(config.INFO, "Removed seat_id:", seatID, "from the booked seats")
+						fmt.Println(config.DEBUG, "Booked seats now are: ", CinemaSeatPlanMock[i]["booked_seats"])
+					}
+				}
+			}
+
+			for _, seatPlan := range showDict["seat_plan"].([]map[string]interface{}) {
+				for _, seat := range seatPlan["seats"].([]map[string]interface{}) {
+					if seat["seat_id"] == seatID {
+						// CinemaSeatPlanMock[i]["seat_plan"].([]map[string]interface{})[k]["seats"].([]map[string]interface{})[l]["status"] = status
+						seat["status"] = status
+						fmt.Println(config.INFO, "changed seat status of 'seat_id':", seatID, "to", status)
+						return
+					}
+				}
+			}
+		} else {
+			fmt.Println(config.ERROR, "'show_id':", showID, "not found for changing seat status")
+		}
+	}
+}
+
+// ResetReservedSeat - helper function which is called after some time to reset a reserved seat
+func ResetReservedSeat(seatID string) {
+
+	for i, reservedSeat := range permanentlyReservedSeats {
+		if seatID == reservedSeat.SeatID {
+
+			// Change the status of the seat so that it is not reserved anymore
+			ChangeSeatStatus(reservedSeat.ShowID, reservedSeat.SeatID, 0)
+
+			// Remove the seat at index i from permanentlyReservedSeats
+			permanentlyReservedSeats[i] = permanentlyReservedSeats[len(permanentlyReservedSeats)-1]                                           // Copy last element to index i.
+			permanentlyReservedSeats[len(permanentlyReservedSeats)-1] = reservedSeats{ShowID: "-1", SeatID: "-1", PermanentlyReserved: false} // Erase last element (write zero value).
+			permanentlyReservedSeats = permanentlyReservedSeats[:len(permanentlyReservedSeats)-1]                                             // Truncate slice.
+			fmt.Println(config.INFO, "Removed the reserved seat '", seatID, "' from the list")
+		}
+	}
+}
+
 // ReserveCinemaSeats - helper function for reserving cinema seats
 func ReserveCinemaSeats(seatPlanIndex int, seatNumbers string) bool {
 
@@ -143,6 +220,14 @@ func ReserveCinemaSeats(seatPlanIndex int, seatNumbers string) bool {
 				if seatDict["status"] == 0 {
 					seatDict["status"] = 1
 					fmt.Println(config.INFO, "reserved seat:", seatDict["seat_id"])
+
+					// Make sure to remove the seat from the permanently reserved seats list (if user doesnt save it within a minute)
+					_seatID := seatDict["seat_id"].(string)
+					ResetTimer := time.AfterFunc(config.SeatResetTimer*time.Second, func() { ResetReservedSeat(_seatID) })
+
+					// Temporarily add the seat in permanently reserved seats list (only for a minute)
+					permanentlyReservedSeats = append(permanentlyReservedSeats, reservedSeats{ShowID: seatPlanMap["show_id"].(string), SeatID: seatDict["seat_id"].(string), PermanentlyReserved: false, SeatResetTimer: ResetTimer})
+
 				} else {
 					fmt.Println(config.WARNING, "seat number:", seatDict["seat_id"], "already reserved [WHY]")
 				}
@@ -264,6 +349,20 @@ func SaveCinemaResponse(cinema, screen, movie, seats, ticketPrice, name, phone, 
 
 }
 
+// MarkSeatPermanentlyBooked - helper function for marking seats permanently booked and it also stops the timer
+func MarkSeatPermanentlyBooked(showID, seatID string) {
+	for _, seat := range permanentlyReservedSeats {
+		if showID == seat.ShowID {
+
+			// mark seat permanently reserved
+			seat.PermanentlyReserved = true
+
+			// stop the reset timer
+			seat.SeatResetTimer.Stop()
+		}
+	}
+}
+
 // SaveCinema - function for bookme /save_cinema API
 func SaveCinema(w http.ResponseWriter, r *http.Request) {
 
@@ -282,11 +381,15 @@ func SaveCinema(w http.ResponseWriter, r *http.Request) {
 
 	response := ""
 	success := false
+	splittedSeatNumbers := strings.Split(strings.Replace(seatNumbers, " ", "", -1), ",")
 
 	for _, movie := range playMovieShowsList {
 		for _, show := range movie["shows"].([]map[string]interface{}) {
 			if showID == show["show_id"] {
 				response, success = SaveCinemaResponse(show["cinema_name"].(string), show["hall_name"].(string), movie["title"].(string), seats, show["ticket_price"].(string), name, phone, email, city, address, seatNumbers, show["show_start_time"].(string), show["handling_charges"].(int))
+				for _, seat := range splittedSeatNumbers {
+					MarkSeatPermanentlyBooked(showID, seat)
+				}
 			}
 		}
 	}

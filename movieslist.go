@@ -1,5 +1,17 @@
 package main
 
+import time "time"
+
+type reservedSeats struct {
+	ShowID              string      `json:"show_id"`
+	SeatID              string      `json:"seat_id"`
+	PermanentlyReserved bool        `json:"permanently_reserved"`
+	SeatResetTimer      *time.Timer `json:"seat_reset_timer"`
+}
+
+// permanentlyReservedSeats - for recording permanently reserved seats
+var permanentlyReservedSeats []reservedSeats
+
 var playMoviesList = []map[string]interface{}{
 	{
 		"movie_id":     "934",
@@ -182,45 +194,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "A_1",
-						"seat_row_name": "A",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_1",
-						"seat_row_name": "A",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "A_2",
 						"seat_row_name": "A",
 						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_2",
-						"seat_row_name": "A",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_2",
-						"seat_row_name": "A",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_3",
-						"seat_row_name": "A",
-						"seat_number":   "3",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_3",
-						"seat_row_name": "A",
-						"seat_number":   "3",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -236,45 +212,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "A_4",
-						"seat_row_name": "A",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_4",
-						"seat_row_name": "A",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "A_5",
 						"seat_row_name": "A",
 						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_5",
-						"seat_row_name": "A",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_5",
-						"seat_row_name": "A",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_6",
-						"seat_row_name": "A",
-						"seat_number":   "6",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_6",
-						"seat_row_name": "A",
-						"seat_number":   "6",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -290,48 +230,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "A_7",
-						"seat_row_name": "A",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_7",
-						"seat_row_name": "A",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_0",
-						"seat_row_name": "A",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "A_0",
-						"seat_row_name": "A",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "A_0",
-						"seat_row_name": "A",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "A_0",
-						"seat_row_name": "A",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "A_0",
-						"seat_row_name": "A",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
 						"seat_id":       "A_0",
 						"seat_row_name": "A",
 						"seat_number":   "0",
@@ -341,30 +239,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_id":       "A_8",
 						"seat_row_name": "A",
 						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_8",
-						"seat_row_name": "A",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_8",
-						"seat_row_name": "A",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_9",
-						"seat_row_name": "A",
-						"seat_number":   "9",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_9",
-						"seat_row_name": "A",
-						"seat_number":   "9",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -380,30 +254,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "A_10",
-						"seat_row_name": "A",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_10",
-						"seat_row_name": "A",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_11",
-						"seat_row_name": "A",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_11",
-						"seat_row_name": "A",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "A_11",
 						"seat_row_name": "A",
 						"seat_number":   "11",
@@ -416,45 +266,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "A_12",
-						"seat_row_name": "A",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_12",
-						"seat_row_name": "A",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "A_13",
 						"seat_row_name": "A",
 						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_13",
-						"seat_row_name": "A",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_13",
-						"seat_row_name": "A",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_14",
-						"seat_row_name": "A",
-						"seat_number":   "14",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "A_14",
-						"seat_row_name": "A",
-						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -474,45 +288,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "B_1",
-						"seat_row_name": "B",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_1",
-						"seat_row_name": "B",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "B_2",
 						"seat_row_name": "B",
 						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_2",
-						"seat_row_name": "B",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_2",
-						"seat_row_name": "B",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_3",
-						"seat_row_name": "B",
-						"seat_number":   "3",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_3",
-						"seat_row_name": "B",
-						"seat_number":   "3",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -528,45 +306,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "B_4",
-						"seat_row_name": "B",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_4",
-						"seat_row_name": "B",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "B_5",
 						"seat_row_name": "B",
 						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_5",
-						"seat_row_name": "B",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_5",
-						"seat_row_name": "B",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_6",
-						"seat_row_name": "B",
-						"seat_number":   "6",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_6",
-						"seat_row_name": "B",
-						"seat_number":   "6",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -582,48 +324,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "B_7",
-						"seat_row_name": "B",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_7",
-						"seat_row_name": "B",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_0",
-						"seat_row_name": "B",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "B_0",
-						"seat_row_name": "B",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "B_0",
-						"seat_row_name": "B",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "B_0",
-						"seat_row_name": "B",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "B_0",
-						"seat_row_name": "B",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
 						"seat_id":       "B_0",
 						"seat_row_name": "B",
 						"seat_number":   "0",
@@ -633,30 +333,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_id":       "B_8",
 						"seat_row_name": "B",
 						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_8",
-						"seat_row_name": "B",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_8",
-						"seat_row_name": "B",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_9",
-						"seat_row_name": "B",
-						"seat_number":   "9",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_9",
-						"seat_row_name": "B",
-						"seat_number":   "9",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -672,30 +348,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "B_10",
-						"seat_row_name": "B",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_10",
-						"seat_row_name": "B",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_11",
-						"seat_row_name": "B",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_11",
-						"seat_row_name": "B",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "B_11",
 						"seat_row_name": "B",
 						"seat_number":   "11",
@@ -708,45 +360,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "B_12",
-						"seat_row_name": "B",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_12",
-						"seat_row_name": "B",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "B_13",
 						"seat_row_name": "B",
 						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_13",
-						"seat_row_name": "B",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_13",
-						"seat_row_name": "B",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_14",
-						"seat_row_name": "B",
-						"seat_number":   "14",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "B_14",
-						"seat_row_name": "B",
-						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -766,45 +382,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "C_1",
-						"seat_row_name": "C",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_1",
-						"seat_row_name": "C",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "C_2",
 						"seat_row_name": "C",
 						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_2",
-						"seat_row_name": "C",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_2",
-						"seat_row_name": "C",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_3",
-						"seat_row_name": "C",
-						"seat_number":   "3",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_3",
-						"seat_row_name": "C",
-						"seat_number":   "3",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -820,45 +400,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "C_4",
-						"seat_row_name": "C",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_4",
-						"seat_row_name": "C",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "C_5",
 						"seat_row_name": "C",
 						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_5",
-						"seat_row_name": "C",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_5",
-						"seat_row_name": "C",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_6",
-						"seat_row_name": "C",
-						"seat_number":   "6",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_6",
-						"seat_row_name": "C",
-						"seat_number":   "6",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -874,48 +418,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "C_7",
-						"seat_row_name": "C",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_7",
-						"seat_row_name": "C",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_0",
-						"seat_row_name": "C",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "C_0",
-						"seat_row_name": "C",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "C_0",
-						"seat_row_name": "C",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "C_0",
-						"seat_row_name": "C",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "C_0",
-						"seat_row_name": "C",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
 						"seat_id":       "C_0",
 						"seat_row_name": "C",
 						"seat_number":   "0",
@@ -925,30 +427,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_id":       "C_8",
 						"seat_row_name": "C",
 						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_8",
-						"seat_row_name": "C",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_8",
-						"seat_row_name": "C",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_9",
-						"seat_row_name": "C",
-						"seat_number":   "9",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_9",
-						"seat_row_name": "C",
-						"seat_number":   "9",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -964,30 +442,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "C_10",
-						"seat_row_name": "C",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_10",
-						"seat_row_name": "C",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_11",
-						"seat_row_name": "C",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_11",
-						"seat_row_name": "C",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "C_11",
 						"seat_row_name": "C",
 						"seat_number":   "11",
@@ -1000,45 +454,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "C_12",
-						"seat_row_name": "C",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_12",
-						"seat_row_name": "C",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "C_13",
 						"seat_row_name": "C",
 						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_13",
-						"seat_row_name": "C",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_13",
-						"seat_row_name": "C",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_14",
-						"seat_row_name": "C",
-						"seat_number":   "14",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "C_14",
-						"seat_row_name": "C",
-						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1058,45 +476,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "D_1",
-						"seat_row_name": "D",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_1",
-						"seat_row_name": "D",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "D_2",
 						"seat_row_name": "D",
 						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_2",
-						"seat_row_name": "D",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_2",
-						"seat_row_name": "D",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_3",
-						"seat_row_name": "D",
-						"seat_number":   "3",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_3",
-						"seat_row_name": "D",
-						"seat_number":   "3",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1112,45 +494,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "D_4",
-						"seat_row_name": "D",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_4",
-						"seat_row_name": "D",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "D_5",
 						"seat_row_name": "D",
 						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_5",
-						"seat_row_name": "D",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_5",
-						"seat_row_name": "D",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_6",
-						"seat_row_name": "D",
-						"seat_number":   "6",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_6",
-						"seat_row_name": "D",
-						"seat_number":   "6",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1166,48 +512,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "D_7",
-						"seat_row_name": "D",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_7",
-						"seat_row_name": "D",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_0",
-						"seat_row_name": "D",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "D_0",
-						"seat_row_name": "D",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "D_0",
-						"seat_row_name": "D",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "D_0",
-						"seat_row_name": "D",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "D_0",
-						"seat_row_name": "D",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
 						"seat_id":       "D_0",
 						"seat_row_name": "D",
 						"seat_number":   "0",
@@ -1217,30 +521,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_id":       "D_8",
 						"seat_row_name": "D",
 						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_8",
-						"seat_row_name": "D",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_8",
-						"seat_row_name": "D",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_9",
-						"seat_row_name": "D",
-						"seat_number":   "9",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_9",
-						"seat_row_name": "D",
-						"seat_number":   "9",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1256,30 +536,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "D_10",
-						"seat_row_name": "D",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_10",
-						"seat_row_name": "D",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_11",
-						"seat_row_name": "D",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_11",
-						"seat_row_name": "D",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "D_11",
 						"seat_row_name": "D",
 						"seat_number":   "11",
@@ -1292,45 +548,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "D_12",
-						"seat_row_name": "D",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_12",
-						"seat_row_name": "D",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "D_13",
 						"seat_row_name": "D",
 						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_13",
-						"seat_row_name": "D",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_13",
-						"seat_row_name": "D",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_14",
-						"seat_row_name": "D",
-						"seat_number":   "14",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "D_14",
-						"seat_row_name": "D",
-						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1350,45 +570,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "E_1",
-						"seat_row_name": "E",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_1",
-						"seat_row_name": "E",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "E_2",
 						"seat_row_name": "E",
 						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_2",
-						"seat_row_name": "E",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_2",
-						"seat_row_name": "E",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_3",
-						"seat_row_name": "E",
-						"seat_number":   "3",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_3",
-						"seat_row_name": "E",
-						"seat_number":   "3",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1404,45 +588,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "E_4",
-						"seat_row_name": "E",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_4",
-						"seat_row_name": "E",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "E_5",
 						"seat_row_name": "E",
 						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_5",
-						"seat_row_name": "E",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_5",
-						"seat_row_name": "E",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_6",
-						"seat_row_name": "E",
-						"seat_number":   "6",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_6",
-						"seat_row_name": "E",
-						"seat_number":   "6",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1458,48 +606,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "E_7",
-						"seat_row_name": "E",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_7",
-						"seat_row_name": "E",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_0",
-						"seat_row_name": "E",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "E_0",
-						"seat_row_name": "E",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "E_0",
-						"seat_row_name": "E",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "E_0",
-						"seat_row_name": "E",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "E_0",
-						"seat_row_name": "E",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
 						"seat_id":       "E_0",
 						"seat_row_name": "E",
 						"seat_number":   "0",
@@ -1509,30 +615,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_id":       "E_8",
 						"seat_row_name": "E",
 						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_8",
-						"seat_row_name": "E",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_8",
-						"seat_row_name": "E",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_9",
-						"seat_row_name": "E",
-						"seat_number":   "9",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_9",
-						"seat_row_name": "E",
-						"seat_number":   "9",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1548,30 +630,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "E_10",
-						"seat_row_name": "E",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_10",
-						"seat_row_name": "E",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_11",
-						"seat_row_name": "E",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_11",
-						"seat_row_name": "E",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "E_11",
 						"seat_row_name": "E",
 						"seat_number":   "11",
@@ -1584,45 +642,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "E_12",
-						"seat_row_name": "E",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_12",
-						"seat_row_name": "E",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "E_13",
 						"seat_row_name": "E",
 						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_13",
-						"seat_row_name": "E",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_13",
-						"seat_row_name": "E",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_14",
-						"seat_row_name": "E",
-						"seat_number":   "14",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "E_14",
-						"seat_row_name": "E",
-						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1642,45 +664,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "F_1",
-						"seat_row_name": "F",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_1",
-						"seat_row_name": "F",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "F_2",
 						"seat_row_name": "F",
 						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_2",
-						"seat_row_name": "F",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_2",
-						"seat_row_name": "F",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_3",
-						"seat_row_name": "F",
-						"seat_number":   "3",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_3",
-						"seat_row_name": "F",
-						"seat_number":   "3",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1696,45 +682,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "F_4",
-						"seat_row_name": "F",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_4",
-						"seat_row_name": "F",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "F_5",
 						"seat_row_name": "F",
 						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_5",
-						"seat_row_name": "F",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_5",
-						"seat_row_name": "F",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_6",
-						"seat_row_name": "F",
-						"seat_number":   "6",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_6",
-						"seat_row_name": "F",
-						"seat_number":   "6",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1750,48 +700,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "F_7",
-						"seat_row_name": "F",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_7",
-						"seat_row_name": "F",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_0",
-						"seat_row_name": "F",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "F_0",
-						"seat_row_name": "F",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "F_0",
-						"seat_row_name": "F",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "F_0",
-						"seat_row_name": "F",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "F_0",
-						"seat_row_name": "F",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
 						"seat_id":       "F_0",
 						"seat_row_name": "F",
 						"seat_number":   "0",
@@ -1801,30 +709,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_id":       "F_8",
 						"seat_row_name": "F",
 						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_8",
-						"seat_row_name": "F",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_8",
-						"seat_row_name": "F",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_9",
-						"seat_row_name": "F",
-						"seat_number":   "9",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_9",
-						"seat_row_name": "F",
-						"seat_number":   "9",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1840,30 +724,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "F_10",
-						"seat_row_name": "F",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_10",
-						"seat_row_name": "F",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_11",
-						"seat_row_name": "F",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_11",
-						"seat_row_name": "F",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "F_11",
 						"seat_row_name": "F",
 						"seat_number":   "11",
@@ -1876,45 +736,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "F_12",
-						"seat_row_name": "F",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_12",
-						"seat_row_name": "F",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "F_13",
 						"seat_row_name": "F",
 						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_13",
-						"seat_row_name": "F",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_13",
-						"seat_row_name": "F",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_14",
-						"seat_row_name": "F",
-						"seat_number":   "14",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "F_14",
-						"seat_row_name": "F",
-						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1934,45 +758,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "G_1",
-						"seat_row_name": "G",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_1",
-						"seat_row_name": "G",
-						"seat_number":   "1",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "G_2",
 						"seat_row_name": "G",
 						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_2",
-						"seat_row_name": "G",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_2",
-						"seat_row_name": "G",
-						"seat_number":   "2",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_3",
-						"seat_row_name": "G",
-						"seat_number":   "3",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_3",
-						"seat_row_name": "G",
-						"seat_number":   "3",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -1988,45 +776,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "G_4",
-						"seat_row_name": "G",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_4",
-						"seat_row_name": "G",
-						"seat_number":   "4",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "G_5",
 						"seat_row_name": "G",
 						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_5",
-						"seat_row_name": "G",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_5",
-						"seat_row_name": "G",
-						"seat_number":   "5",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_6",
-						"seat_row_name": "G",
-						"seat_number":   "6",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_6",
-						"seat_row_name": "G",
-						"seat_number":   "6",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -2042,48 +794,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "G_7",
-						"seat_row_name": "G",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_7",
-						"seat_row_name": "G",
-						"seat_number":   "7",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_0",
-						"seat_row_name": "G",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "G_0",
-						"seat_row_name": "G",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "G_0",
-						"seat_row_name": "G",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "G_0",
-						"seat_row_name": "G",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
-						"seat_id":       "G_0",
-						"seat_row_name": "G",
-						"seat_number":   "0",
-						"seat_type":     0,
-						"status":        0},
-					{
 						"seat_id":       "G_0",
 						"seat_row_name": "G",
 						"seat_number":   "0",
@@ -2093,30 +803,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_id":       "G_8",
 						"seat_row_name": "G",
 						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_8",
-						"seat_row_name": "G",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_8",
-						"seat_row_name": "G",
-						"seat_number":   "8",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_9",
-						"seat_row_name": "G",
-						"seat_number":   "9",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_9",
-						"seat_row_name": "G",
-						"seat_number":   "9",
 						"seat_type":     "1",
 						"status":        0},
 					{
@@ -2132,30 +818,6 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "G_10",
-						"seat_row_name": "G",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_10",
-						"seat_row_name": "G",
-						"seat_number":   "10",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_11",
-						"seat_row_name": "G",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_11",
-						"seat_row_name": "G",
-						"seat_number":   "11",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "G_11",
 						"seat_row_name": "G",
 						"seat_number":   "11",
@@ -2168,45 +830,9 @@ var CinemaSeatPlanMock = []map[string]interface{}{
 						"seat_type":     "1",
 						"status":        0},
 					{
-						"seat_id":       "G_12",
-						"seat_row_name": "G",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_12",
-						"seat_row_name": "G",
-						"seat_number":   "12",
-						"seat_type":     "1",
-						"status":        0},
-					{
 						"seat_id":       "G_13",
 						"seat_row_name": "G",
 						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_13",
-						"seat_row_name": "G",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_13",
-						"seat_row_name": "G",
-						"seat_number":   "13",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_14",
-						"seat_row_name": "G",
-						"seat_number":   "14",
-						"seat_type":     "1",
-						"status":        0},
-					{
-						"seat_id":       "G_14",
-						"seat_row_name": "G",
-						"seat_number":   "14",
 						"seat_type":     "1",
 						"status":        0},
 					{
