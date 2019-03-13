@@ -1,4 +1,4 @@
-package main
+package cinema
 
 import time "time"
 

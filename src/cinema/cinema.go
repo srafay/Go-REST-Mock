@@ -1,13 +1,15 @@
-package main
+package cinema
 
 import (
-	config "config"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	config "config"
+	utils "utils"
 )
 
 // GetMovieDetails - function for getting movie details of a particular movie_id
@@ -27,7 +29,7 @@ func AreValidCinemaDetails(w http.ResponseWriter, r *http.Request, movieid strin
 	result, found := GetMovieDetails(movieid)
 
 	if !found {
-		WriteJSONResponse(w, fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid))
+		utils.WriteJSONResponse(w, fmt.Sprintf(`{"show_id":%s,"hall_id":null,"hall_name":null,"rows":null,"cols":null,"seat_plan":null,"booked_seats":""}`, showid))
 		fmt.Println(config.DEBUG, r.RequestURI, "Movieid not found")
 		return false
 	}
@@ -56,7 +58,7 @@ func PlayMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Return json response
-	WriteJSONResponse(w, string(js))
+	utils.WriteJSONResponse(w, string(js))
 	return
 }
 
@@ -77,12 +79,12 @@ func PlayMovieShows(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		WriteJSONResponse(w, string(_response))
+		utils.WriteJSONResponse(w, string(_response))
 		return
 	}
 
 	// Send an empty response as sent by Bookme API (if movie id isn't found)
-	WriteJSONResponse(w, "[[]]")
+	utils.WriteJSONResponse(w, "[[]]")
 	fmt.Println(config.WARNING, r.RequestURI, "Invalid Movie ID", movieid)
 	return
 }
@@ -103,7 +105,7 @@ func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-				WriteJSONResponse(w, string(js))
+				utils.WriteJSONResponse(w, string(js))
 				return
 			}
 		}
@@ -112,7 +114,7 @@ func CinemaSeatPlan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send an empty response as sent by Bookme API (if movie id isn't found)
-	WriteJSONResponse(w, "[[]]")
+	utils.WriteJSONResponse(w, "[[]]")
 	fmt.Println(config.ERROR, r.RequestURI, "Invalid Show ID or Movie ID")
 	return
 }
@@ -216,7 +218,7 @@ func ReserveCinemaSeats(seatPlanIndex int, seatNumbers string) bool {
 	for _, seatPlan := range seatPlanMapIterable {
 		SeatsIterable := seatPlan["seats"].([]map[string]interface{})
 		for _, seatDict := range SeatsIterable {
-			if stringInSlice(seatDict["seat_id"].(string), splittedSeatNumbers) {
+			if utils.StringInSlice(seatDict["seat_id"].(string), splittedSeatNumbers) {
 				if seatDict["status"] == 0 {
 					seatDict["status"] = 1
 					fmt.Println(config.INFO, "reserved seat:", seatDict["seat_id"])
@@ -269,11 +271,11 @@ func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
 			if CinemaSeatPlanMock[k]["show_id"] == showid {
 				seatsReserved := ReserveCinemaSeats(k, seatNumbers)
 				if !seatsReserved {
-					WriteJSONResponse(w, `[{"status":"failed", "msg":"Seats are aready allocated."}]`)
+					utils.WriteJSONResponse(w, `[{"status":"failed", "msg":"Seats are aready allocated."}]`)
 				} else {
-					WriteJSONResponse(w, fmt.Sprintf(`[{"status":"success", "msg":"Seats are allocated successfully.", "booking_no":"%d"}]`, config.BookingNumber))
+					utils.WriteJSONResponse(w, fmt.Sprintf(`[{"status":"success", "msg":"Seats are allocated successfully.", "booking_no":"%d"}]`, config.BookingNumber))
 
-					// increment the BookingNumber variable
+					// increment the config.BookingNumber variable
 					config.BookingNumber++
 
 					// change status of reserved seats to booked
@@ -282,7 +284,7 @@ func CinemaReserveSeats(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		WriteJSONResponse(w, fmt.Sprintf("No seatplan found for show_id: %s", showid))
+		utils.WriteJSONResponse(w, fmt.Sprintf("No seatplan found for show_id: %s", showid))
 		return
 	}
 }
@@ -294,7 +296,7 @@ func SaveCinemaResponse(cinema, screen, movie, seats, ticketPrice, name, phone, 
 	bookingID := fmt.Sprintf("AC%d", config.BookingNumber*100000)
 	orderRefNumber := fmt.Sprintf("AC%d", config.BookingNumber*100000)
 	order := fmt.Sprintf("mov%d", config.BookingNumber*100)
-	bookmeBookingID := getRandomSeq(32)
+	bookmeBookingID := utils.GetRandomSeq(32)
 	bookingReference := ""
 	netAmount := 0
 	discount := 0
@@ -395,9 +397,9 @@ func SaveCinema(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if success {
-		WriteJSONResponse(w, response)
+		utils.WriteJSONResponse(w, response)
 	} else {
-		WriteJSONResponse(w, `[{"status":"failed", "msg":"Invalid parameters"}]`)
+		utils.WriteJSONResponse(w, `[{"status":"failed", "msg":"Invalid parameters"}]`)
 	}
 	return
 

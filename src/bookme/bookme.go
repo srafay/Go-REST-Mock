@@ -1,13 +1,12 @@
 package main
 
 import (
+	cinema "cinema"
+	config "config"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"time"
-
-	config "config"
+	"utils"
 
 	"github.com/gorilla/mux"
 )
@@ -18,13 +17,6 @@ func main() {
 	router.HandleFunc("/bookme/rest_api", HeadersAuthorization(BookmeRest, config.BookmeAPIKey, config.BookmeAuthorization))
 	fmt.Println(config.INFO, "Server started, listening at port 8000")
 	log.Fatal(http.ListenAndServe(":8000", router))
-}
-
-// WriteJSONResponse - helper function for writing JSON response to Response Writer
-func WriteJSONResponse(w http.ResponseWriter, response string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(response))
-	return
 }
 
 // ValidRequestMethod - This method checks if request method is allowed or not
@@ -51,7 +43,7 @@ func HeadersAuthorization(handler http.HandlerFunc, bookmeAPIKey, bookmeAuthoriz
 
 		if apikey != bookmeAPIKey || authorization != bookmeAuthorization {
 			w.WriteHeader(401)
-			WriteJSONResponse(w, "Unauthorised.\nInvalid Headers provided (API_KEY, Authorization)")
+			utils.WriteJSONResponse(w, "Unauthorised.\nInvalid Headers provided (API_KEY, Authorization)")
 			return
 		}
 
@@ -62,7 +54,7 @@ func HeadersAuthorization(handler http.HandlerFunc, bookmeAPIKey, bookmeAuthoriz
 // IsValidAPIKey - Checks if valid API key was passed in form-data
 func IsValidAPIKey(w http.ResponseWriter, r *http.Request, APIKey string) bool {
 	if APIKey != config.BookmeAPIKey {
-		WriteJSONResponse(w, "{\"status\":false,\"error\":\"Invalid API Key.\"}")
+		utils.WriteJSONResponse(w, "{\"status\":false,\"error\":\"Invalid API Key.\"}")
 		fmt.Println(config.ERROR, r.RequestURI, "Invalid API key!")
 		return false
 	}
@@ -92,38 +84,16 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 	var params = r.URL.Query()
 
 	if params["play_movies"] != nil {
-		PlayMovies(w, r)
+		cinema.PlayMovies(w, r)
 	} else if params["play_movie_shows"] != nil {
-		PlayMovieShows(w, r)
+		cinema.PlayMovieShows(w, r)
 	} else if params["cinema_seatplan"] != nil {
-		CinemaSeatPlan(w, r)
+		cinema.CinemaSeatPlan(w, r)
 	} else if params["cinema_reserve_seats"] != nil {
-		CinemaReserveSeats(w, r)
+		cinema.CinemaReserveSeats(w, r)
 	} else if params["save_cinema"] != nil {
-		SaveCinema(w, r)
+		cinema.SaveCinema(w, r)
 	} else {
 		fmt.Fprintf(w, "Invalid query parameter (endpoint)")
 	}
-}
-
-// stringInSlice - helper function which provides 'in' functionality as in python
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if a == b {
-			return true
-		}
-	}
-	return false
-}
-
-// getRandomSeq - helper function for generating random sequence
-func getRandomSeq(n int) string {
-
-	rand.Seed(time.Now().UnixNano())
-	var letters = []rune("abcde0123456789")
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
 }
