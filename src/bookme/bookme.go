@@ -1,12 +1,14 @@
 package main
 
 import (
-	cinema "cinema"
-	config "config"
 	"fmt"
 	"log"
 	"net/http"
 	"utils"
+
+	cinema "cinema"
+	config "config"
+	transport "transport"
 
 	"github.com/gorilla/mux"
 )
@@ -93,6 +95,12 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 		cinema.CinemaReserveSeats(w, r)
 	} else if params["save_cinema"] != nil {
 		cinema.SaveCinema(w, r)
+	} else if params["get_transport_services"] != nil {
+		transport.GetTransportServices(w, r)
+	} else if params["get_deperature_cities"] != nil {
+		transport.GetDepartureCities(w, r)
+	} else if params["get_destination_cities"] != nil {
+		transport.GetDestinationCities(w, r)
 	} else {
 		fmt.Fprintf(w, "Invalid query parameter (endpoint)")
 	}
