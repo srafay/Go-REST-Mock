@@ -210,3 +210,480 @@ var timeIDs = []map[string]interface{}{
 		},
 	},
 }
+
+var seatsInfo = []map[string]interface{}{
+	{
+		"service_id":            "10",
+		"origin_city_id":        "1",
+		"arrival_city_id":       "6",
+		"date":                  "2019-03-23",
+		"deptime":               "23:00",
+		"time_id":               "48160",
+		"schedule_id":           "17478",
+		"route_id":              "28",
+		"seats":                 "40",
+		"total_seats":           "40",
+		"total_available":       40,
+		"available_seats":       []string{},
+		"total_occupied":        0,
+		"occupied_seats_male":   []string{},
+		"occupied_seats_female": []string{},
+		"total_reserved":        0,
+		"reserved_seats_male":   []string{},
+		"reserved_seats_female": []string{},
+		"seat_plan": map[string]interface{}{
+			"rows":  "4",
+			"cols":  "10",
+			"seats": "40",
+			"seatplan": [][]interface{}{
+				{
+					map[string]string{
+						"seat_id":   "1",
+						"seat_name": "1",
+					},
+					map[string]string{
+						"seat_id":   "5",
+						"seat_name": "5",
+					},
+					map[string]string{
+						"seat_id":   "9",
+						"seat_name": "9",
+					},
+					map[string]string{
+						"seat_id":   "13",
+						"seat_name": "13",
+					},
+					map[string]string{
+						"seat_id":   "17",
+						"seat_name": "17",
+					},
+					map[string]string{
+						"seat_id":   "21",
+						"seat_name": "21",
+					},
+					map[string]string{
+						"seat_id":   "25",
+						"seat_name": "25",
+					},
+					map[string]string{
+						"seat_id":   "29",
+						"seat_name": "29",
+					},
+					map[string]string{
+						"seat_id":   "33",
+						"seat_name": "33",
+					},
+					map[string]string{
+						"seat_id":   "37",
+						"seat_name": "37",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "2",
+						"seat_name": "2",
+					},
+					map[string]string{
+						"seat_id":   "6",
+						"seat_name": "6",
+					},
+					map[string]string{
+						"seat_id":   "10",
+						"seat_name": "10",
+					},
+					map[string]string{
+						"seat_id":   "14",
+						"seat_name": "14",
+					},
+					map[string]string{
+						"seat_id":   "18",
+						"seat_name": "18",
+					},
+					map[string]string{
+						"seat_id":   "22",
+						"seat_name": "22",
+					},
+					map[string]string{
+						"seat_id":   "26",
+						"seat_name": "26",
+					},
+					map[string]string{
+						"seat_id":   "30",
+						"seat_name": "30",
+					},
+					map[string]string{
+						"seat_id":   "34",
+						"seat_name": "34",
+					},
+					map[string]string{
+						"seat_id":   "38",
+						"seat_name": "38",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "0",
+					},
+					map[string]string{
+						"seat_id":   "7",
+						"seat_name": "7",
+					},
+					map[string]string{
+						"seat_id":   "11",
+						"seat_name": "11",
+					},
+					map[string]string{
+						"seat_id":   "15",
+						"seat_name": "15",
+					},
+					map[string]string{
+						"seat_id":   "19",
+						"seat_name": "19",
+					},
+					map[string]string{
+						"seat_id":   "23",
+						"seat_name": "23",
+					},
+					map[string]string{
+						"seat_id":   "27",
+						"seat_name": "27",
+					},
+					map[string]string{
+						"seat_id":   "31",
+						"seat_name": "31",
+					},
+					map[string]string{
+						"seat_id":   "35",
+						"seat_name": "35",
+					},
+					map[string]string{
+						"seat_id":   "39",
+						"seat_name": "39",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "4",
+						"seat_name": "4",
+					},
+					map[string]string{
+						"seat_id":   "8",
+						"seat_name": "8",
+					},
+					map[string]string{
+						"seat_id":   "12",
+						"seat_name": "12",
+					},
+					map[string]string{
+						"seat_id":   "16",
+						"seat_name": "16",
+					},
+					map[string]string{
+						"seat_id":   "20",
+						"seat_name": "20",
+					},
+					map[string]string{
+						"seat_id":   "24",
+						"seat_name": "24",
+					},
+					map[string]string{
+						"seat_id":   "28",
+						"seat_name": "28",
+					},
+					map[string]string{
+						"seat_id":   "32",
+						"seat_name": "32",
+					},
+					map[string]string{
+						"seat_id":   "36",
+						"seat_name": "36",
+					},
+					map[string]string{
+						"seat_id":   "40",
+						"seat_name": "40",
+					},
+				},
+			},
+		},
+	},
+	{
+		"service_id":            "10",
+		"origin_city_id":        "1",
+		"arrival_city_id":       "38",
+		"date":                  "2019-03-23",
+		"deptime":               "16:00",
+		"time_id":               "48161",
+		"schedule_id":           "17479",
+		"route_id":              "29",
+		"seats":                 "40",
+		"total_seats":           "40",
+		"total_available":       40,
+		"available_seats":       []string{},
+		"total_occupied":        0,
+		"occupied_seats_male":   []string{},
+		"occupied_seats_female": []string{},
+		"total_reserved":        0,
+		"reserved_seats_male":   []string{},
+		"reserved_seats_female": []string{},
+		"seat_plan": map[string]interface{}{
+			"rows":  "4",
+			"cols":  "10",
+			"seats": "40",
+			"seatplan": [][]interface{}{
+				{
+					map[string]string{
+						"seat_id":   "1",
+						"seat_name": "1",
+					},
+					map[string]string{
+						"seat_id":   "5",
+						"seat_name": "5",
+					},
+					map[string]string{
+						"seat_id":   "9",
+						"seat_name": "9",
+					},
+					map[string]string{
+						"seat_id":   "13",
+						"seat_name": "13",
+					},
+					map[string]string{
+						"seat_id":   "17",
+						"seat_name": "17",
+					},
+					map[string]string{
+						"seat_id":   "21",
+						"seat_name": "21",
+					},
+					map[string]string{
+						"seat_id":   "25",
+						"seat_name": "25",
+					},
+					map[string]string{
+						"seat_id":   "29",
+						"seat_name": "29",
+					},
+					map[string]string{
+						"seat_id":   "33",
+						"seat_name": "33",
+					},
+					map[string]string{
+						"seat_id":   "37",
+						"seat_name": "37",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "2",
+						"seat_name": "2",
+					},
+					map[string]string{
+						"seat_id":   "6",
+						"seat_name": "6",
+					},
+					map[string]string{
+						"seat_id":   "10",
+						"seat_name": "10",
+					},
+					map[string]string{
+						"seat_id":   "14",
+						"seat_name": "14",
+					},
+					map[string]string{
+						"seat_id":   "18",
+						"seat_name": "18",
+					},
+					map[string]string{
+						"seat_id":   "22",
+						"seat_name": "22",
+					},
+					map[string]string{
+						"seat_id":   "26",
+						"seat_name": "26",
+					},
+					map[string]string{
+						"seat_id":   "30",
+						"seat_name": "30",
+					},
+					map[string]string{
+						"seat_id":   "34",
+						"seat_name": "34",
+					},
+					map[string]string{
+						"seat_id":   "38",
+						"seat_name": "38",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "0",
+						"seat_name": "0",
+					},
+					map[string]string{
+						"seat_id":   "7",
+						"seat_name": "7",
+					},
+					map[string]string{
+						"seat_id":   "11",
+						"seat_name": "11",
+					},
+					map[string]string{
+						"seat_id":   "15",
+						"seat_name": "15",
+					},
+					map[string]string{
+						"seat_id":   "19",
+						"seat_name": "19",
+					},
+					map[string]string{
+						"seat_id":   "23",
+						"seat_name": "23",
+					},
+					map[string]string{
+						"seat_id":   "27",
+						"seat_name": "27",
+					},
+					map[string]string{
+						"seat_id":   "31",
+						"seat_name": "31",
+					},
+					map[string]string{
+						"seat_id":   "35",
+						"seat_name": "35",
+					},
+					map[string]string{
+						"seat_id":   "39",
+						"seat_name": "39",
+					},
+				},
+				{
+					map[string]string{
+						"seat_id":   "4",
+						"seat_name": "4",
+					},
+					map[string]string{
+						"seat_id":   "8",
+						"seat_name": "8",
+					},
+					map[string]string{
+						"seat_id":   "12",
+						"seat_name": "12",
+					},
+					map[string]string{
+						"seat_id":   "16",
+						"seat_name": "16",
+					},
+					map[string]string{
+						"seat_id":   "20",
+						"seat_name": "20",
+					},
+					map[string]string{
+						"seat_id":   "24",
+						"seat_name": "24",
+					},
+					map[string]string{
+						"seat_id":   "28",
+						"seat_name": "28",
+					},
+					map[string]string{
+						"seat_id":   "32",
+						"seat_name": "32",
+					},
+					map[string]string{
+						"seat_id":   "36",
+						"seat_name": "36",
+					},
+					map[string]string{
+						"seat_id":   "40",
+						"seat_name": "40",
+					},
+				},
+			},
+		},
+	},
+}

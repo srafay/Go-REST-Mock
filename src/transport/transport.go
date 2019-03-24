@@ -159,3 +159,24 @@ func BusTimes(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, `{"times":[]}`)
 	return
 }
+
+// SeatsInfo - function for /seats_info
+func SeatsInfo(w http.ResponseWriter, r *http.Request) {
+	serviceID := r.FormValue("service_id")
+	originCityID := r.FormValue("origin_city_id")
+	arrivalCityID := r.FormValue("arrival_city_id")
+	// date := r.FormValue("date")
+	// depTime := r.FormValue("deptime")
+	timeID := r.FormValue("time_id")
+	scheduleID := r.FormValue("schedule_id")
+	routeID := r.FormValue("route_id")
+	// seats := r.FormValue("seats")
+
+	for _, seatDict := range seatsInfo {
+		if seatDict["service_id"] == serviceID && seatDict["origin_city_id"] == originCityID &&
+			seatDict["arrival_city_id"] == arrivalCityID && seatDict["time_id"] == timeID &&
+			seatDict["schedule_id"] == scheduleID && seatDict["route_id"] == routeID {
+
+		}
+	}
+}

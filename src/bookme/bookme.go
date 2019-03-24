@@ -103,6 +103,8 @@ func BookmeRest(w http.ResponseWriter, r *http.Request) {
 		transport.GetDestinationCities(w, r)
 	} else if params["bus_times"] != nil {
 		transport.BusTimes(w, r)
+	} else if params["seats_info"] != nil {
+		transport.SeatsInfo(w, r)
 	} else {
 		fmt.Fprintf(w, "Invalid query parameter (endpoint)")
 	}
