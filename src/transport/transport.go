@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"utils"
 )
 
-// GetTransportServices - function for get_transport_services
+// GetTransportServices - function for /get_transport_services
 func GetTransportServices(w http.ResponseWriter, r *http.Request) {
 
 	js, err := json.Marshal(transportList)
@@ -33,7 +34,7 @@ func getServiceDepartureCities(serviceID string) []byte {
 	return []byte("[]")
 }
 
-// GetDepartureCities - function for get_deparature_cities
+// GetDepartureCities - function for /get_deparature_cities
 func GetDepartureCities(w http.ResponseWriter, r *http.Request) {
 
 	serviceID := r.FormValue("service_id")
@@ -99,5 +100,62 @@ func GetDestinationCities(w http.ResponseWriter, r *http.Request) {
 	response := getServiceDestinationCities(serviceID, originCityID)
 
 	utils.WriteJSONResponse(w, string(response))
+	return
+}
+
+// BusTimes - function for /bus_times
+func BusTimes(w http.ResponseWriter, r *http.Request) {
+
+	serviceID := r.FormValue("service_id")
+	departureCityID := r.FormValue("departure_city_id")
+	arrivalCityID := r.FormValue("arrival_city_id")
+	date := r.FormValue("date")
+
+	_serviceID, _ := strconv.Atoi(serviceID)
+	_departureCityID, _ := strconv.Atoi(departureCityID)
+	_arrivalCityID, _ := strconv.Atoi(arrivalCityID)
+
+	for _, timeDict := range timeIDs {
+		if _serviceID == timeDict["service_id"] && _departureCityID == timeDict["departure_city_id"] &&
+			_arrivalCityID == timeDict["arrival_city_id"] && date == timeDict["date"] {
+			facilities, _ := json.Marshal(timeDict["facilities"])
+			utils.WriteJSONResponse(w, fmt.Sprintf(`{
+				"times": [{
+					"departure_city_id": %d,
+					"departure_city_name": "%s",
+					"arrival_city_id": %d,
+					"arrival_city_name": "%s",
+					"service_id": %d,
+					"service_name": "%s",
+					"time_id": %d,
+					"schedule_id": %d,
+					"route_id": %d,
+					"time": "%s",
+					"arrtime": "%s",
+					"original_fare": %d,
+					"fare": %d,
+					"handling_charges": %d,
+					"easypaisa_charges": %d,
+					"thumb": "%s",
+					"seats": %d,
+					"busname": "%s",
+					"bustype": "%s",
+					"btype_id": %d,
+					"facilities": %s,
+					"seat_info": "%s"
+				}]
+			}`,
+				timeDict["departure_city_id"], timeDict["departure_city_name"], timeDict["arrival_city_id"],
+				timeDict["arrival_city_name"], timeDict["service_id"], timeDict["service_name"], timeDict["time_id"],
+				timeDict["schedule_id"], timeDict["route_id"], timeDict["time"], timeDict["arrtime"],
+				timeDict["original_fare"], timeDict["fare"], timeDict["handling_charges"],
+				timeDict["easypaisa_charges"], timeDict["thumb"], timeDict["seats"], timeDict["busname"],
+				timeDict["bustype"], timeDict["btype_id"], string(facilities), timeDict["seat_info"]))
+
+			return
+		}
+	}
+
+	utils.WriteJSONResponse(w, `{"times":[]}`)
 	return
 }
